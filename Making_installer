@@ -53,6 +53,13 @@ pyinstaller geminieye_sv_main.spec
 
 >1. Gemini eye SVアプリケーションでの検証
 >(URL)
+
+# GenimiEye SVのアプリケーションはslnファイルのDebugの開始で確認することが出来る。
+#Debugフォルダ内でのC:\Users\develop\00_git_projects\gemini-eye-SV\gemini_eye_SV\frontend\AISupportTool\bin\Debug exeでも同じ検証をすることが出来る。
+#ただ”PythonService.cs`のMODEをEXEに切り替え”によって最新の状態にDebug以下のファイルが更新される。
+#更新されたファイルを確認するという意味において、exファイルを実行するのではなくslnファイルからMODEを変更後にデバックを行って動作させる方が確実。
+# GenimiEye SVの場合distフォルダ内に”pm”フォルダが生成されないことがあり、無いと検証が出来ない。SVではpre modelという事前学習のデータを使う
+
 >2. SDKの検証 : exe_test.batの実行
 >(詳細URLのREADME.md)
 
