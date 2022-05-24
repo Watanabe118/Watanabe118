@@ -1,0 +1,310 @@
+# Innosetup - Gemini eye SV
+Gemini eye SVのインストーラ作成
+
+## バージョン管理
+
+リリース時は, Gemini eyeの製品バージョンに合わせ,**release1.2.0.0**のように、開発リポジトリ(https://github.com/ProsConsInc/gemini-eye-SV)ブランチを切ること。
+
+**<バージョンの考え方>**
+
+> **[1桁目]メジャー番号** 　: アプリのリニューアルや破壊的な変更を行った場合に変更させる 
+>
+> **[2桁目]マイナー番号** 　: 大きな機能追加や機能向上をさせた場合に変更させる(メジャー番号が変化した場合, 0に戻す)
+>
+> **[3桁目]リビジョン番号** : 取扱説明書に記載するレベルのバグ修正や変更をさせた場合に変更させる(マイナー番号が変化した場合, 0に戻す)
+>
+> **[4桁目]ビルド番号** 　　: アプリに大きな影響のない細かな修正をさせた場合変更させる(この番号はユーザーには見えない)
+
+
+
+## 手順概要
+
+1. [pythonコードのEXE化](#anchor1)
+2. [EXEのプロテクト](#anchor2)
+3. [インストーラーの作成](#anchor3)
+4. [納品物の準備](#anchor4)
+5. [注意点](#anchor5)
+
+
+
+## <a id="anchor1">pythonコードのEXE化</a>
+
+### main関数のEXE化
+
+`pyinstaller`でgemini-eye-SVの`Debug\backend`以下のメイン関数(`geminieye_sv_main.py`)をexe化する
+
+```
+pyinstaller geminieye_sv_main.spec
+```
+
+**※ pyファイルをEXE化してしまうとspecファイルが上書きされてしまうので注意!**
+
+**※ もし実行してしまった場合は, 5章の注意点を参考に再度specファイルを作り直す.**
+
+
+
+### EXEファイルの動作検証
+
+`Debug/backend/dist`以下に`geminieye_sv_main.exe`が出力されていることを確認する.
+
+確認後, `AISupportTool.sln`上の`PythonService.cs`のMODEをEXEに切り替え以下の検証を行う.
+
+**<検証内容>**
+
+>1. Gemini eye SVアプリケーションでの検証
+>(URL)
+>2. SDKの検証 : exe_test.batの実行
+>(詳細URLのREADME.md)
+
+
+
+### インストーラー前準備
+
+検証をし, 正常に動作することを確認したら, `Debug`以下を全てコピーして, 本リポジトリの`gemini_eye_sv/Gemini-eye-SV/`以下にペーストする.
+
+> **開発実フォルダ**：`C:\Users\develop\projects\gemini-eye-SV\frontend\AISupportTool\bin\Debug`
+>
+> **インストーラ実フォルダ**：`C:\Users\develop\projects\Geminieye-installer\gemini_eye_SV/`
+
+
+
+ペースト後, 以下のファイルを排除する
+
+> `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/Debug`にある, build と dist 以外
+
+> `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/`にある以下の３つ
+>
+> ・core_system.log
+> ・system.log
+> ・file_monitor.txt
+
+また、iniファイル等の設定ファイルは初期設定に戻すこと（取扱マニュアルと整合性を確認すること）。
+
+（買い切りライセンス等）マックアドレス固定の必要性がある場合には*macアドレス固定ファイル(hw_compiler_enc.bin)を、顧客のmacアドレスを書き込んだ指定のファイルに置き換えること*
+
+
+### 発行元署名の実行
+
+最後に, 発行元を担保するために, 実行ファイル(`Geminieye-SV.exe`)に署名を行う。
+
+```bat
+digital_sign_exe.bat
+```
+
+**※ batの中身は開発環境次第でフォルダ構成が変更する必要があるので注意!**
+
+**※ 開発環境次第で, signingtoolが入っていないこともあるので, 適宜インストール**
+
+
+
+## <a id="anchor2">EXEファイルのプロテクト</a>
+
+### EXEファイルのプロテクト
+
+まず, 会社保有の**CmFSB**(銀色のタグが付いたUSBドングル)を挿し, `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV\ax_protector_projects/`にあるプロジェクトファイルを起動させる. 
+
+> ファームコード = 6001082
+> プロダクトコード = 1000 (Gemini eyeシリーズ)
+> 有効期限（日数）：残り何日で有効期限アラートを表示するか(14に設定)
+
+その後, プロテクトされた`gemnieye_sv_main.exe`を以下のディレクトリ にコピーして置き換える
+
+> **元のディレクトリ**  : `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/backend/dist/protected/`
+>
+> **置換え先ディレクトリ** :  `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/backend/dist/`
+
+
+
+
+### 配布ドングルにプロダクトコードを登録
+
+**※ eyeやIntegrationで行っている場合は, この行程は飛ばしてよい.**
+
+以下の二つをPCに挿す
+
+> ・会社保有のCmFSB（銀色のタグが付いたUSBドングル)
+> ・コードを登録するドングル (薄グレーのUSBドングル)
+
+次に, **CodeMeter License Editor**のアプリケーションを開き, 以下の手順を行う
+
+> 1. コードを登録するドングルを選択
+> 2. アイテムの追加を押下しファームコードを入力
+> 3. ファームコードを選択し, 特定のプロダクトコードのものに有効期限を加える。
+
+設定後、お客様に対応するドングルのシリアル番号や付与したプロダクトコード、有効期限などを[CodeMeterドングル管理表　顧客管理表](https://docs.google.com/spreadsheets/d/16QB6fi6Lt_6GCrSvYxvRmBDFAOGNp_Mb0DCmS4G52BU/edit#gid=1139415883)に記載する。
+
+
+
+## <a id="anchor3">インストーラーの作成</a>
+
+### インストーラー必要ファイルの確認
+
+`C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/`に以下のファイルがあるかを確認する. 
+
+> ・cudnn.lib
+>
+> ・cudnn64-7.dll
+>
+> ・cudnn.h
+
+**※これらのファイルCUDAのバージョンに依存するため, CUDAのバージョンアップをした場合は変更したバージョンに対応したものに置き換える**
+
+
+
+### インストーラーの作成
+
+**installer.iss**を実行し, `innosetup`を起動する.
+
+提供バージョンを確認し, コンパイルを行う.
+
+出力されるインストーラーは, `C:Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV/Outputs/`に出力される.
+
+**※ バージョンをアップデートする際はinstaller.issで, バージョンを変更する**
+
+
+
+### 発行元署名の実行
+
+最後に, 発行元を担保するために, 実行ファイル(`GeminieyeSVInstaller.exe`)に署名を行う。
+
+```bat
+digital_sign_installerexe.bat
+```
+
+**※ batの中身は開発環境次第でフォルダ構成が変更する必要があるので注意!**
+
+**※ 開発環境次第で, signingtoolが入っていないこともあるので, 適宜インストール**
+
+
+
+## <a id="anchor4">納品物の準備</a>
+
+実際にインストールし, アプリケーションの動作確認を行う.
+
+**<検証内容>**
+
+> Gemini eye SVアプリケーションでの検証
+> (URL)
+
+確認後, 以下を専用のDVD-RWに書き込み,  配布用ドングルと一緒に箱に入れる.
+
+> ・GeminieyeInstaller.exe (同リポジトリで作成)
+>
+> ・GeminieyeSVInstaller.exe
+>
+> ・GeminieyeIntegrationInstaller.exe (同リポジトリで作成)
+>
+> ・video_record.exe (別リポジトリで作成)
+>
+> ・AnnotationToolForSV.exe (同リポジトリで作成)
+>
+> ・CodeMeterRuntime64.exe
+>
+> ・Gemini_eye_v[*]_取扱マニュアル.pdf (Googleドライブにて管理)
+>
+> ・Gemini_eye_SV_v[*]_取扱マニュアル.pdf (Googleドライブにて管理)
+>
+> ・Gemini_eye__Integraiton_v[*]_取扱マニュアル.pdf (Googleドライブにて管理)
+>
+> ・サンプルデータ
+
+
+
+## <a id="anchor5">注意点</a>
+
+### envファイル
+
+ユーザーでモデルの詳細な調整ができるよう`.geminieye_sv_env`というファイルを用意している.
+
+インストーラーを作成する際に, **隠しファイル属性**がこのファイルに付与されているとインストーラーに含まれないため, もしアプリケーションが正常に動作しない場合は, 確認してください。
+
+
+
+### pyinstallerの再実行
+
+pyinstallerでは, EXE化するための設定ファイルとしてspecファイルを生成しています.
+
+実行の際に, オプションをつけることで,このファイルの設定を適切に生成することができます.
+
+```
+pyinstaller geminieye_sv_main.py
+```
+
+を実行後, specファイルを編集し, 再度以下を実行することで, 正常にEXE化をすることができます.
+
+```
+pyinstaller geminieye_sv_main.spec
+```
+
+**specファイル**
+
+```spec
+# -*- mode: python ; coding: utf-8 -*-
+
+import pypylon
+import pathlib
+from pypylon import pylon
+from pypylon import genicam
+from pypylon import _genicam
+from pypylon import _pylon
+pypylon_dir = pathlib.Path(pypylon.__file__).parent
+pypylon_dlls = [(str(dll), '.') for dll in pypylon_dir.glob('*.dll')]
+pypylon_pyds = [(str(dll), '.') for dll in pypylon_dir.glob('*.pyd')]
+
+_binaries = list()
+_binaries.extend(pypylon_dlls)
+_binaries.extend(pypylon_pyds)
+
+_pathex = list()
+_pathex.append(str(pypylon_dir))
+
+_hiddenimports = list()
+_hiddenimports.extend(['pypylon', 'pypylon.pylon', 'pypylon.genicam', 'pypylon._pylon', 'pypylon._genicam'])
+block_cipher = None
+
+
+a = Analysis(['geminieye_sv_main.py'],
+             pathex=['C:\\Users\\develop\\Desktop\\project\\gemini-eye-SV\\gemini_eye_SV\\frontend\\AISupportTool\\bin\\Debug\\backend', str(pypylon_dir)],
+             binaries=_binaries,
+             datas=[],
+             hiddenimports=_hiddenimports,
+             hookspath=[],
+             hooksconfig={},
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher,
+             noarchive=False)
+
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
+
+exe = EXE(pyz,
+          a.scripts, 
+          [],
+          exclude_binaries=True,
+          name='geminieye_sv_main',
+          debug=False,
+          bootloader_ignore_signals=False,
+          strip=False,
+          upx=True,
+          console=True,
+          disable_windowed_traceback=False,
+          target_arch=None,
+          codesign_identity=None,
+          entitlements_file=None)
+
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas, 
+               strip=False,
+               upx=True,
+               upx_exclude=[],
+               name='geminieye_sv_main')
+```
+
+
+
+ 
