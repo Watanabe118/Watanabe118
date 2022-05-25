@@ -1,3 +1,4 @@
+#　坂田さんと町さんの共通認識をこのインストーラのセットアップに記載していて、よくわからなかった点については追記してpushする。ローカルで編集を行ってpushを行う。
 # Innosetup - Gemini eye SV
 Gemini eye SVのインストーラ作成
 
@@ -75,8 +76,9 @@ pyinstaller geminieye_sv_main.spec
 >
 > **インストーラ実フォルダ**：`C:\Users\develop\projects\Geminieye-installer\gemini_eye_SV/`
 
-#installerについては別のレポジトリである。本レポジトリとはインストーラーのレポジトリのこと。
 
+#[wata]installerについては別のレポジトリである。本レポジトリとはインストーラーのレポジトリのこと。
+# ？？上のパスはローカルのフォルダを指していると思われるので、後程編集を行うべきか。　インストーラーの再発注。追加見積を行う。
 
 ペースト後, 以下のファイルを排除する
 
@@ -87,6 +89,9 @@ pyinstaller geminieye_sv_main.spec
 > ・core_system.log
 > ・system.log
 > ・file_monitor.txt
+
+##----- [wata]実際はDebug/backend以下の内容なのではないか。　buildとdistを指しているのではないか
+##----- 2行目については、   Gemini-eye-SV/Debugなのではないか
 
 また、iniファイル等の設定ファイルは初期設定に戻すこと（取扱マニュアルと整合性を確認すること）。
 
@@ -105,6 +110,7 @@ digital_sign_exe.bat
 
 **※ 開発環境次第で, signingtoolが入っていないこともあるので, 適宜インストール**
 
+#[]digital_sign_exe.bat　について署名できたか 成功すればsuccesfully signedとterminalでメッセージがでた。
 
 
 ## <a id="anchor2">EXEファイルのプロテクト</a>
@@ -112,6 +118,11 @@ digital_sign_exe.bat
 ### EXEファイルのプロテクト
 
 まず, 会社保有の**CmFSB**(銀色のタグが付いたUSBドングル)を挿し, `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv/Gemini-eye-SV\ax_protector_projects/`にあるプロジェクトファイルを起動させる. 
+
+# `C:/Users/develop/projects/Geminieye-installer/gemini_eye_sv\ax_protector_projects/`にあった上にあるパスは間違い
+# ドングルキーによって使用日数の制限を行っている、
+#　インストーラのファイルを更新する同dshs意外と謎、finishとしたがよくわからない項目もある。Prefection in software protection
+# protectのフォルダはやったら消す事
 
 > ファームコード = 6001082
 > プロダクトコード = 1000 (Gemini eyeシリーズ)
@@ -172,6 +183,11 @@ digital_sign_exe.bat
 **※ バージョンをアップデートする際はinstaller.issで, バージョンを変更する**
 
 
+#[] `innosetupでコンパイルする方法が分からない。どのようにすればコンパイルなのか　⇒　innosetupを起動してrunのボタンで開始する。
+#C:\Users\develop\00_git_projects\Gemini-eye-installer\gemini_eye_sv　ここにインストーラーが出力される　
+#バージョンは結局どのように変更されるのか。変更された結果はインストールしたCドライブで確認することが出来る。
+
+
 
 ### 発行元署名の実行
 
@@ -184,7 +200,7 @@ digital_sign_installerexe.bat
 **※ batの中身は開発環境次第でフォルダ構成が変更する必要があるので注意!**
 
 **※ 開発環境次第で, signingtoolが入っていないこともあるので, 適宜インストール**
-
+#[]確認インストーラへの署名と元のexeファイルそのものに対する署名の二種類がある
 
 
 ## <a id="anchor4">納品物の準備</a>
@@ -192,12 +208,9 @@ digital_sign_installerexe.bat
 実際にインストールし, アプリケーションの動作確認を行う.
 
 **<検証内容>**
-
 > Gemini eye SVアプリケーションでの検証
 > (URL)
-
 確認後, 以下を専用のDVD-RWに書き込み,  配布用ドングルと一緒に箱に入れる.
-
 > ・GeminieyeInstaller.exe (同リポジトリで作成)
 >
 > ・GeminieyeSVInstaller.exe
