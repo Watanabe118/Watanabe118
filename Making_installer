@@ -34,6 +34,7 @@ Gemini eye SVのインストーラ作成
 
 `pyinstaller`でgemini-eye-SVの`Debug\backend`以下のメイン関数(`geminieye_sv_main.py`)をexe化する
 
+該当箇所のterminalで以下のコマンドを実行
 ```
 pyinstaller geminieye_sv_main.spec
 ```
