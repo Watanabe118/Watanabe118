@@ -108,11 +108,11 @@ digital_sign_exe.bat
 ```
 
 **※ batの中身は開発環境次第でフォルダ構成が変更する必要があるので注意!**
-
+ターミナルで自動操作をするのみなので、操作対象のファイルの実行を行う。
 **※ 開発環境次第で, signingtoolが入っていないこともあるので, 適宜インストール**
 
 #[]digital_sign_exe.bat　について署名できたか 成功すればsuccesfully signedとterminalでメッセージがでた。
-
+instakker.issの内容を変更して対応を行っていくこと
 
 ## <a id="anchor2">EXEファイルのプロテクト</a>
 
